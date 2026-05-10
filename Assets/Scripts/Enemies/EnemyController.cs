@@ -1,7 +1,7 @@
 using UnityEngine;
 using UnityEngine.AI;
 using CoreBreach.Interfaces;
-
+using CoreBreach.Systems;
 namespace CoreBreach.Enemies
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -18,11 +18,9 @@ namespace CoreBreach.Enemies
         
         private NavMeshAgent agent;
         
-        // İki potansiyel hedefimiz
         private Transform playerTransform;
         private Transform coreTransform;
         
-        // O anki aktif hedefimiz
         private Transform currentTarget; 
 
         public float CurrentHealth => currentHealth;
@@ -41,7 +39,7 @@ namespace CoreBreach.Enemies
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null) playerTransform = playerObj.transform;
 
-            // Merkez üssü bul (Oluşturduğumuz GameCore etiketiyle)
+            // Merkez üssü bul
             GameObject coreObj = GameObject.FindGameObjectWithTag("GameCore"); 
             if (coreObj != null) coreTransform = coreObj.transform;
         }
@@ -51,7 +49,6 @@ namespace CoreBreach.Enemies
             // Önce kime saldıracağımıza karar ver
             DetermineTarget();
 
-            // Hedef yoksa hiçbir şey yapma
             if (currentTarget == null) return;
 
             if (agent.isOnNavMesh)
@@ -69,7 +66,6 @@ namespace CoreBreach.Enemies
 
         private void DetermineTarget()
         {
-            // İkisi de yoksa hedef yok
             if (playerTransform == null && coreTransform == null)
             {
                 currentTarget = null;
@@ -128,6 +124,7 @@ namespace CoreBreach.Enemies
 
         public void Die()
         {
+            UIManager.Instance.AddScore(10);
             gameObject.SetActive(false);
         }
     }
