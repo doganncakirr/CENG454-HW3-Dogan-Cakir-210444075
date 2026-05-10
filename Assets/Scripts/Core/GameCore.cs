@@ -1,5 +1,6 @@
 using UnityEngine;
 using CoreBreach.Interfaces;
+using CoreBreach.Systems;
 
 namespace CoreBreach.Entities
 {
@@ -22,12 +23,21 @@ namespace CoreBreach.Entities
             Debug.Log($"Core Damage! Health: {currentHealth}");
 
             if (currentHealth <= 0) Die();
+            
+        UIManager.Instance.UpdateCoreHealth(currentHealth, maxHealth);
         }
 
         public void Die()
         {
             Debug.Log("GAME OVER: The Core has been destroyed!");
             // Buraya ilerde Game Manager üzerinden yenilgi ekranı tetikleyicisi eklenecek.
+        }
+        private void Start()
+        {
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdateCoreHealth(currentHealth, maxHealth);
+            }
         }
     }
 }
