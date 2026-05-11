@@ -11,7 +11,7 @@ namespace CoreBreach.Player
         [SerializeField] private float moveSpeed = 5f;
         
         [Header("Look Settings")]
-        [SerializeField] private float mouseSensitivity = 200f; // Fare hassasiyeti
+        [SerializeField] private float mouseSensitivity = 200f; 
         [SerializeField] private Transform playerCamera;
         private float xRotation = 0f;
 
@@ -39,25 +39,28 @@ namespace CoreBreach.Player
             Cursor.visible = false;
         }
 
+        private void Start()
+        {
+            if (UIManager.Instance != null)
+            {
+                UIManager.Instance.UpdatePlayerHealth(currentHealth, maxHealth);
+            }
+        }
+
         private void Update()
         {
-            // 1. Hareket Girdileri
             moveInput.x = Input.GetAxisRaw("Horizontal");
             moveInput.y = Input.GetAxisRaw("Vertical");
 
-            // 2. Mouse Aiming
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
-            // Kamerayı Yukarı/Aşağı Döndürme (X ekseni)
             xRotation -= mouseY;
-            xRotation = Mathf.Clamp(xRotation, -90f, 90f); // Kafayı geriye katlamamak için -90/90 sınırlandırması
+            xRotation = Mathf.Clamp(xRotation, -90f, 90f); 
             playerCamera.localRotation = Quaternion.Euler(xRotation, 0f, 0f);
 
-            // Karakteri Sağa/Sola Döndürme
             transform.Rotate(Vector3.up * mouseX);
 
-            // 3. Ateş Etme
             if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
             {
                 Shoot();
@@ -93,21 +96,18 @@ namespace CoreBreach.Player
         public void TakeDamage(float damageAmount)
         {
             currentHealth = Mathf.Max(0, currentHealth - damageAmount);
-            if (currentHealth <= 0) Die();
-            
             UIManager.Instance.UpdatePlayerHealth(currentHealth, maxHealth);
+            
+            if (currentHealth <= 0) Die();
         }
 
         public void Die()
         {
             Debug.Log("Player Died!");
-            gameObject.SetActive(false);
-        }
-        private void Start()
-        {
-            if (UIManager.Instance != null)
+            
+            if (GameManager.Instance != null)
             {
-            UIManager.Instance.UpdatePlayerHealth(currentHealth, maxHealth);
+                GameManager.Instance.GameOver();
             }
         }
     }
