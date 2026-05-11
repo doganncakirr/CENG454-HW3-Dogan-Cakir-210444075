@@ -1,5 +1,5 @@
 using UnityEngine;
-using TMPro; // TextMeshPro kütüphanesi
+using TMPro;
 
 namespace CoreBreach.Systems
 {
@@ -11,6 +11,9 @@ namespace CoreBreach.Systems
         [SerializeField] private TextMeshProUGUI playerHealthText;
         [SerializeField] private TextMeshProUGUI coreHealthText;
         [SerializeField] private TextMeshProUGUI scoreText;
+
+        [Header("Panels")]
+        [SerializeField] private GameObject gameOverPanel;
 
         private int currentScore = 0;
 
@@ -31,7 +34,6 @@ namespace CoreBreach.Systems
             UpdateScore(0);
         }
 
-        // Oyuncu canını güncelleyen metot
         public void UpdatePlayerHealth(float currentHealth, float maxHealth)
         {
             if (playerHealthText != null)
@@ -40,7 +42,6 @@ namespace CoreBreach.Systems
             }
         }
 
-        // Merkez üssün canını güncelleyen metot
         public void UpdateCoreHealth(float currentHealth, float maxHealth)
         {
             if (coreHealthText != null)
@@ -49,7 +50,6 @@ namespace CoreBreach.Systems
             }
         }
 
-        // Skoru artıran ve güncelleyen metot
         public void AddScore(int points)
         {
             currentScore += points;
@@ -61,6 +61,17 @@ namespace CoreBreach.Systems
             if (scoreText != null)
             {
                 scoreText.text = $"Score: {score}";
+            }
+        }
+
+        public void ShowGameOverPanel()
+        {
+            if (gameOverPanel != null)
+            {
+                gameOverPanel.SetActive(true);
+                
+                Cursor.lockState = CursorLockMode.None;
+                Cursor.visible = true;
             }
         }
     }
