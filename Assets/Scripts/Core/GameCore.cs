@@ -19,10 +19,7 @@ namespace CoreBreach.Entities
 
         private void Start()
         {
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.UpdateCoreHealth(currentHealth, maxHealth);
-            }
+            GameEvents.FireCoreHealthChanged(currentHealth, maxHealth);
         }
 
         public void TakeDamage(float damageAmount)
@@ -30,18 +27,15 @@ namespace CoreBreach.Entities
             currentHealth = Mathf.Max(0, currentHealth - damageAmount);
             Debug.Log($"Core Damage! Health: {currentHealth}");
 
-            UIManager.Instance.UpdateCoreHealth(currentHealth, maxHealth);
-            
+            GameEvents.FireCoreHealthChanged(currentHealth, maxHealth);
+
             if (currentHealth <= 0) Die();
         }
 
         public void Die()
         {
             Debug.Log("GAME OVER: The Core has been destroyed!");
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.GameOver();
-            }
+            GameEvents.FireCoreDied();
         }
     }
 }

@@ -41,10 +41,7 @@ namespace CoreBreach.Player
 
         private void Start()
         {
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.UpdatePlayerHealth(currentHealth, maxHealth);
-            }
+            GameEvents.FirePlayerHealthChanged(currentHealth, maxHealth);
         }
 
         private void Update()
@@ -96,19 +93,15 @@ namespace CoreBreach.Player
         public void TakeDamage(float damageAmount)
         {
             currentHealth = Mathf.Max(0, currentHealth - damageAmount);
-            UIManager.Instance.UpdatePlayerHealth(currentHealth, maxHealth);
-            
+            GameEvents.FirePlayerHealthChanged(currentHealth, maxHealth);
+
             if (currentHealth <= 0) Die();
         }
 
         public void Die()
         {
             Debug.Log("Player Died!");
-            
-            if (GameManager.Instance != null)
-            {
-                GameManager.Instance.GameOver();
-            }
+            GameEvents.FirePlayerDied();
         }
     }
 }
