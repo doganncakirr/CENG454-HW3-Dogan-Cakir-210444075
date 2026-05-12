@@ -102,7 +102,6 @@ namespace CoreBreach.Player
         {
             Debug.Log("Player Died!");
             GameEvents.FirePlayerDied();
-            gameObject.SetActive(false);
         }
     }
 }
