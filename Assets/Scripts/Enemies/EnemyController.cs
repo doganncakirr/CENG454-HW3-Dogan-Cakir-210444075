@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.AI;
 using CoreBreach.Interfaces;
 using CoreBreach.Systems;
+
 namespace CoreBreach.Enemies
 {
     [RequireComponent(typeof(NavMeshAgent))]
@@ -124,7 +125,7 @@ namespace CoreBreach.Enemies
 
         public void Die()
         {
-            UIManager.Instance.AddScore(10);
+            GameEvents.FireEnemyDied(10);
             gameObject.SetActive(false);
         }
     }

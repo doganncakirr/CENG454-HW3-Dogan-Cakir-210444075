@@ -41,10 +41,7 @@ namespace CoreBreach.Player
 
         private void Start()
         {
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.UpdatePlayerHealth(currentHealth, maxHealth);
-            }
+            GameEvents.FirePlayerHealthChanged(currentHealth, maxHealth);
         }
 
         private void Update()
