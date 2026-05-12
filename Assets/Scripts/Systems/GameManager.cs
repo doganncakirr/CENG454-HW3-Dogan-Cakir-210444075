@@ -13,16 +13,23 @@ namespace CoreBreach.Systems
             else Destroy(gameObject);
         }
 
+        private void OnEnable()
+        {
+            GameEvents.OnPlayerDied += GameOver;
+            GameEvents.OnCoreDied += GameOver;
+        }
+
+        private void OnDisable()
+        {
+            GameEvents.OnPlayerDied -= GameOver;
+            GameEvents.OnCoreDied -= GameOver;
+        }
+
         public void GameOver()
         {
             Time.timeScale = 0f;
-            
-            if (UIManager.Instance != null)
-            {
-                UIManager.Instance.ShowGameOverPanel();
-            }
         }
-
+        
         public void RestartGame()
         {
             Time.timeScale = 1f;

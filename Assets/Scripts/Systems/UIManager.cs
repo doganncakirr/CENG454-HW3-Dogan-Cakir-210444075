@@ -29,12 +29,29 @@ namespace CoreBreach.Systems
             }
         }
 
+        private void OnEnable()
+        {
+            GameEvents.OnPlayerHealthChanged += UpdatePlayerHealth;
+            GameEvents.OnCoreHealthChanged += UpdateCoreHealth;
+            GameEvents.OnEnemyDied += AddScore;
+            GameEvents.OnPlayerDied += ShowGameOverPanel;
+            GameEvents.OnCoreDied += ShowGameOverPanel;
+        }
+
+        private void OnDisable()
+        {
+            GameEvents.OnPlayerHealthChanged -= UpdatePlayerHealth;
+            GameEvents.OnCoreHealthChanged -= UpdateCoreHealth;
+            GameEvents.OnEnemyDied -= AddScore;
+            GameEvents.OnPlayerDied -= ShowGameOverPanel;
+            GameEvents.OnCoreDied -= ShowGameOverPanel;
+        }
         private void Start()
         {
             UpdateScore(0);
         }
 
-        public void UpdatePlayerHealth(float currentHealth, float maxHealth)
+        private void UpdatePlayerHealth(float currentHealth, float maxHealth)
         {
             if (playerHealthText != null)
             {
@@ -42,7 +59,7 @@ namespace CoreBreach.Systems
             }
         }
 
-        public void UpdateCoreHealth(float currentHealth, float maxHealth)
+        private void UpdateCoreHealth(float currentHealth, float maxHealth)
         {
             if (coreHealthText != null)
             {
@@ -50,7 +67,7 @@ namespace CoreBreach.Systems
             }
         }
 
-        public void AddScore(int points)
+        private void AddScore(int points)
         {
             currentScore += points;
             UpdateScore(currentScore);
@@ -64,7 +81,7 @@ namespace CoreBreach.Systems
             }
         }
 
-        public void ShowGameOverPanel()
+        private void ShowGameOverPanel()
         {
             if (gameOverPanel != null)
             {
