@@ -49,16 +49,21 @@
     <Analyzer Include="C:\Program Files\Unity\Hub\Editor\6000.3.13f1\Editor\Data\Tools\BuildPipeline\Unity.SourceGenerators\Unity.UIToolkit.SourceGenerator.dll" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Assets\Scripts\Interfaces\IWeapon.cs" />
     <Compile Include="Assets\Scripts\Systems\ObjectPoolManager.cs" />
+    <Compile Include="Assets\Scripts\Weapons\TripleShotDecorator.cs" />
     <Compile Include="Assets\Scripts\Weapons\Bullet.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemyController.cs" />
     <Compile Include="Assets\Scripts\Systems\UIManager.cs" />
     <Compile Include="Assets\Scripts\Systems\GameManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
+    <Compile Include="Assets\Scripts\Weapons\BasicBlaster.cs" />
     <Compile Include="Assets\TutorialInfo\Scripts\Readme.cs" />
+    <Compile Include="Assets\Scripts\Weapons\WeaponDecorator.cs" />
     <Compile Include="Assets\Scripts\Systems\GameEvents.cs" />
     <Compile Include="Assets\Scripts\Core\GameCore.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemySpawner.cs" />
+    <Compile Include="Assets\Scripts\Weapons\RapidFireDecorator.cs" />
     <Compile Include="Assets\Scripts\Interfaces\IDamageable.cs" />
   </ItemGroup>
   <ItemGroup>

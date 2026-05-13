@@ -1,6 +1,7 @@
 using UnityEngine;
 using CoreBreach.Interfaces;
 using CoreBreach.Systems;
+using CoreBreach.Weapons;
 
 namespace CoreBreach.Player
 {
@@ -21,8 +22,8 @@ namespace CoreBreach.Player
 
         [Header("Weapon Settings")]
         [SerializeField] private Transform firePoint;
-        [SerializeField] private float fireRate = 0.15f;
         private float nextFireTime;
+        private IWeapon currentWeapon;
 
         private Rigidbody rb;
         private Vector2 moveInput;
@@ -37,6 +38,7 @@ namespace CoreBreach.Player
 
             Cursor.lockState = CursorLockMode.Locked;
             Cursor.visible = false;
+            currentWeapon = new BasicBlaster();
         }
 
         private void Start()
@@ -46,9 +48,11 @@ namespace CoreBreach.Player
 
         private void Update()
         {
+            // 1. Hareket Girdileri
             moveInput.x = Input.GetAxisRaw("Horizontal");
             moveInput.y = Input.GetAxisRaw("Vertical");
 
+            // 2. Kamera ve Yön Girdileri
             float mouseX = Input.GetAxis("Mouse X") * mouseSensitivity * Time.deltaTime;
             float mouseY = Input.GetAxis("Mouse Y") * mouseSensitivity * Time.deltaTime;
 
@@ -58,9 +62,25 @@ namespace CoreBreach.Player
 
             transform.Rotate(Vector3.up * mouseX);
 
+            // 3. YENİ ATEŞ ETME SİSTEMİ Decorator Pattern ile
             if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
             {
-                Shoot();
+                nextFireTime = Time.time + currentWeapon.FireRate; 
+                currentWeapon.Fire(firePoint);
+            }
+
+            // Klavyeden 1'e basınca RapidFire modülü takılsın
+            if (Input.GetKeyDown(KeyCode.Alpha1))
+            {
+                currentWeapon = new RapidFireDecorator(currentWeapon);
+                Debug.Log("Seri Ateş Modülü Takıldı! Yeni Hız: " + currentWeapon.FireRate);
+            }
+            
+            // Klavyeden 2'ye basınca TripleShot modülü takılsın
+            if (Input.GetKeyDown(KeyCode.Alpha2))
+            {
+                currentWeapon = new TripleShotDecorator(currentWeapon);
+                Debug.Log("Üçlü Mermi Modülü Takıldı!");
             }
         }
 
@@ -68,26 +88,6 @@ namespace CoreBreach.Player
         {
             Vector3 moveDirection = (transform.right * moveInput.x + transform.forward * moveInput.y).normalized;
             rb.MovePosition(rb.position + moveDirection * moveSpeed * Time.fixedDeltaTime);
-        }
-
-        private void Shoot()
-        {
-            nextFireTime = Time.time + fireRate;
-
-            Ray ray = new Ray(playerCamera.position, playerCamera.forward);
-            Vector3 targetPoint;
-            
-            if (Physics.Raycast(ray, out RaycastHit hit))
-            {
-                targetPoint = hit.point;
-            }
-            else
-            {
-                targetPoint = ray.GetPoint(100f); 
-            }
-
-            Vector3 direction = targetPoint - firePoint.position;
-            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", firePoint.position, Quaternion.LookRotation(direction));
         }
 
         public void TakeDamage(float damageAmount)
