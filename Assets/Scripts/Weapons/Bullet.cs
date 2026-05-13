@@ -23,7 +23,7 @@ namespace CoreBreach.Weapons
 
         private void Update()
         {
-            // Mermiyi kendi Z ekseninde (ileri doğru) hareket ettir
+            // Mermiyi kendi Z ekseninde hareket ettir
             transform.Translate(Vector3.forward * speed * Time.deltaTime);
         }
 
@@ -37,7 +37,7 @@ namespace CoreBreach.Weapons
                 damageable.TakeDamage(damage);
             }
 
-            // Çarptıktan sonra yok olma, havuza geri dön!
+            // Çarptıktan sonra havuza geri dön.
             Deactivate();
         }
 

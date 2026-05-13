@@ -1202,7 +1202,10 @@ MonoBehaviour:
   playerCamera: {fileID: 330585546}
   maxHealth: 100
   firePoint: {fileID: 790484280}
-  fireRate: 0.15
+  tripleShotCooldown: 12
+  tripleShotDuration: 5
+  rapidFireCooldown: 10
+  rapidFireDuration: 3.5
 --- !u!54 &689598629
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -1352,7 +1355,7 @@ Transform:
   m_GameObject: {fileID: 790484279}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.046, y: 0.386, z: 0.673}
+  m_LocalPosition: {x: -0.004, y: 0.463, z: 0.674}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []

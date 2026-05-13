@@ -31,6 +31,20 @@ namespace CoreBreach.Player
         public float CurrentHealth => currentHealth;
         public float MaxHealth => maxHealth;
 
+        [Header("Ability Settings")]
+        [SerializeField] private float tripleShotCooldown = 12f;
+        [SerializeField] private float tripleShotDuration = 5f;
+        [SerializeField] private float rapidFireCooldown = 10f;
+        [SerializeField] private float rapidFireDuration = 3.5f;
+        
+        // Yetenek takibi için zamanlayıcılar. -1 demek yetenek şu an aktif değil demek
+        private float rapidFireEndTime = -1f;
+        private float tripleShotEndTime = -1f;
+
+        // Cooldown takibi için zamanlayıcılar. Yetenek bittikten sonra sayacak
+        private float nextRapidFireAvailableTime = 0f;
+        private float nextTripleShotAvailableTime = 0f;
+
         private void Awake()
         {
             rb = GetComponent<Rigidbody>();
@@ -62,26 +76,81 @@ namespace CoreBreach.Player
 
             transform.Rotate(Vector3.up * mouseX);
 
-            // 3. YENİ ATEŞ ETME SİSTEMİ Decorator Pattern ile
+            // 3. Silah ve Yetenek Kontrolleri
+            HandleWeaponState();
+            HandleFiring();
+            HandleAbilityInputs();
+        }
+
+        private void HandleWeaponState()
+        {
+            if (rapidFireEndTime > 0 && Time.time >= rapidFireEndTime)
+            {
+                ResetWeapon();
+                rapidFireEndTime = -1f; // Yeteneği kapat
+                nextRapidFireAvailableTime = Time.time + rapidFireCooldown; // Cooldown'ı BAŞLAT
+                Debug.Log("Rapid Fire bitti, Cooldown başladı.");
+            }
+
+            if (tripleShotEndTime > 0 && Time.time >= tripleShotEndTime)
+            {
+                ResetWeapon();
+                tripleShotEndTime = -1f; // Yeteneği kapat
+                nextTripleShotAvailableTime = Time.time + tripleShotCooldown; // Cooldown'ı BAŞLAT
+                Debug.Log("Triple Shot bitti, Cooldown başladı.");
+            }
+        }
+
+        private void HandleFiring()
+        {
             if (Input.GetButton("Fire1") && Time.time >= nextFireTime)
             {
                 nextFireTime = Time.time + currentWeapon.FireRate; 
                 currentWeapon.Fire(firePoint);
             }
+        }
 
+        private void HandleAbilityInputs()
+        {
             // Klavyeden 1'e basınca RapidFire modülü takılsın
             if (Input.GetKeyDown(KeyCode.Alpha1))
             {
-                currentWeapon = new RapidFireDecorator(currentWeapon);
-                Debug.Log("Seri Ateş Modülü Takıldı! Yeni Hız: " + currentWeapon.FireRate);
+                // Yetenek hazırsa ve şu an zaten aktif değilse çalıştır
+                if (Time.time >= nextRapidFireAvailableTime && rapidFireEndTime < 0)
+                {
+                    currentWeapon = new RapidFireDecorator(currentWeapon);
+                    rapidFireEndTime = Time.time + rapidFireDuration; // Kapanacağı zamanı ayarla
+                    Debug.Log($"Rapid Fire AKTİF ({rapidFireDuration} sn)");
+                }
+                else if (rapidFireEndTime < 0) // Eğer aktif değilse ama basıldıysa cooldown uyarısı ver
+                {
+                    float remaining = nextRapidFireAvailableTime - Time.time;
+                    Debug.Log($"RapidFire Cooldown: {remaining:F1}s kaldı.");
+                }
             }
             
-            // Klavyeden 2'ye basınca TripleShot modülü takılsın
+            // "2'ye" basınca TripleShot modülü takılsın
             if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                currentWeapon = new TripleShotDecorator(currentWeapon);
-                Debug.Log("Üçlü Mermi Modülü Takıldı!");
+                // Yetenek hazırsa ve şu an zaten aktif değilse çalıştır
+                if (Time.time >= nextTripleShotAvailableTime && tripleShotEndTime < 0)
+                {
+                    currentWeapon = new TripleShotDecorator(currentWeapon);
+                    tripleShotEndTime = Time.time + tripleShotDuration; // Kapanacağı zamanı ayarla
+                    Debug.Log($"Triple Shot AKTİF ({tripleShotDuration} sn)");
+                }
+                else if (tripleShotEndTime < 0)
+                {
+                    float remaining = nextTripleShotAvailableTime - Time.time;
+                    Debug.Log($"TripleShot için {remaining:F1}s bekle!");
+                }
             }
+        }
+
+        private void ResetWeapon()
+        {
+            // Yetenek bitince temel silaha geri dön
+            currentWeapon = new BasicBlaster();
         }
 
         private void FixedUpdate()

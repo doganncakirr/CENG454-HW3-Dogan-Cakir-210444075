@@ -10,27 +10,26 @@ namespace CoreBreach.Weapons
 
         public override void Fire(Transform firePoint)
         {
-            // 1. mermi
+            // 1. Merkez Mermi
             base.Fire(firePoint);
 
-            //  Üç merminin de aynı noktaya odaklanması için hesaplama.
+            // Hedef noktayı hesapla
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
-            Vector3 targetPoint;
-            
-            if (Physics.Raycast(ray, out RaycastHit hit))
-                targetPoint = hit.point;
-            else
-                targetPoint = ray.GetPoint(100f);
+            Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit) ? hit.point : ray.GetPoint(100f);
+            Vector3 centerDirection = (targetPoint - firePoint.position).normalized;
 
-            // 2. mermi (sağ)
-            Vector3 rightOffsetPosition = firePoint.position + firePoint.right * 0.5f;
-            Vector3 rightDirection = targetPoint - rightOffsetPosition;
-            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", rightOffsetPosition, Quaternion.LookRotation(rightDirection));
+            float offsetDistance = 0.14f; // Mermileri yanlara kaydırma mesafesi
+            float spreadAngle = 7f;      // Dışarı doğru açılma açısı
 
-            // 3. mermi (sol)
-            Vector3 leftOffsetPosition = firePoint.position - firePoint.right * 0.5f;
-            Vector3 leftDirection = targetPoint - leftOffsetPosition;
-            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", leftOffsetPosition, Quaternion.LookRotation(leftDirection));
+            // 2. Sağdaki Mermi
+            Vector3 rightPos = firePoint.position + firePoint.right * offsetDistance;
+            Vector3 rightDir = Quaternion.Euler(0, spreadAngle, 0) * centerDirection;
+            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", rightPos, Quaternion.LookRotation(rightDir));
+
+            // 3. Soldaki Mermi
+            Vector3 leftPos = firePoint.position - firePoint.right * offsetDistance;
+            Vector3 leftDir = Quaternion.Euler(0, -spreadAngle, 0) * centerDirection;
+            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", leftPos, Quaternion.LookRotation(leftDir));
         }
     }
 }

@@ -7,7 +7,7 @@ namespace CoreBreach.Weapons
     //silahımız
     public class BasicBlaster : IWeapon
     {
-        private float baseFireRate = 0.15f;
+        private float baseFireRate = 0.35f;
 
         public float FireRate => baseFireRate;
 
