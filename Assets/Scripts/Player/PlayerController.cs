@@ -89,7 +89,7 @@ namespace CoreBreach.Player
                 ResetWeapon();
                 rapidFireEndTime = -1f; // Yeteneği kapat
                 nextRapidFireAvailableTime = Time.time + rapidFireCooldown; // Cooldown'ı BAŞLAT
-                Debug.Log("Rapid Fire bitti, Cooldown başladı.");
+                Debug.Log("Rapid Fire is over, Cooldown has begun.");
             }
 
             if (tripleShotEndTime > 0 && Time.time >= tripleShotEndTime)
@@ -97,7 +97,7 @@ namespace CoreBreach.Player
                 ResetWeapon();
                 tripleShotEndTime = -1f; // Yeteneği kapat
                 nextTripleShotAvailableTime = Time.time + tripleShotCooldown; // Cooldown'ı BAŞLAT
-                Debug.Log("Triple Shot bitti, Cooldown başladı.");
+                Debug.Log("Triple Shot is over, Cooldown has begun.");
             }
         }
 
@@ -120,12 +120,12 @@ namespace CoreBreach.Player
                 {
                     currentWeapon = new RapidFireDecorator(currentWeapon);
                     rapidFireEndTime = Time.time + rapidFireDuration; // Kapanacağı zamanı ayarla
-                    Debug.Log($"Rapid Fire AKTİF ({rapidFireDuration} sn)");
+                    Debug.Log($"Rapid Fire ACTIVE ({rapidFireDuration} s)");
                 }
                 else if (rapidFireEndTime < 0) // Eğer aktif değilse ama basıldıysa cooldown uyarısı ver
                 {
                     float remaining = nextRapidFireAvailableTime - Time.time;
-                    Debug.Log($"RapidFire Cooldown: {remaining:F1}s kaldı.");
+                    Debug.Log($"Rapid Fire cooldown: {remaining:F1}s remaining.");
                 }
             }
             
@@ -137,12 +137,12 @@ namespace CoreBreach.Player
                 {
                     currentWeapon = new TripleShotDecorator(currentWeapon);
                     tripleShotEndTime = Time.time + tripleShotDuration; // Kapanacağı zamanı ayarla
-                    Debug.Log($"Triple Shot AKTİF ({tripleShotDuration} sn)");
+                    Debug.Log($"Triple Shot ACTIVE ({tripleShotDuration} s)");
                 }
                 else if (tripleShotEndTime < 0)
                 {
                     float remaining = nextTripleShotAvailableTime - Time.time;
-                    Debug.Log($"TripleShot için {remaining:F1}s bekle!");
+                    Debug.Log($"Triple Shot cooldown: {remaining:F1}s remaining.");
                 }
             }
         }
