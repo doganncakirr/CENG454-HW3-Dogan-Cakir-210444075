@@ -22,7 +22,7 @@ namespace CoreBreach.Enemies
         {
             while (isSpawning)
             {
-                // Belirlenen süre kadar bekle (Örn: 3 saniye)
+                // Belirlenen süre kadar bekle
                 yield return new WaitForSeconds(spawnInterval);
 
                 if (spawnPoints.Length > 0)
@@ -31,12 +31,12 @@ namespace CoreBreach.Enemies
                     int randomIndex = Random.Range(0, spawnPoints.Length);
                     Transform selectedPoint = spawnPoints[randomIndex];
 
-                    // Havuzdan (Object Pool) düşmanı seçilen noktaya çağır
+                    //Object Pool'dan düşmanı seçilen noktaya çağır
                     ObjectPoolManager.Instance.SpawnFromPool(enemyTag, selectedPoint.position, selectedPoint.rotation);
                 }
                 else
                 {
-                    Debug.LogWarning("EnemySpawner: Hiç Spawn Point (Doğma Noktası) atanmamış!");
+                    Debug.LogWarning("EnemySpawner: No Spawn Point assigned!");
                 }
             }
         }
