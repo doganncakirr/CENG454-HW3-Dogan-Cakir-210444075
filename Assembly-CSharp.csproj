@@ -51,10 +51,13 @@
   <ItemGroup>
     <Compile Include="Assets\Scripts\Interfaces\IWeapon.cs" />
     <Compile Include="Assets\Scripts\Systems\ObjectPoolManager.cs" />
+    <Compile Include="Assets\Scripts\Enemies\CoreDestroyerStrategy.cs" />
     <Compile Include="Assets\Scripts\Weapons\TripleShotDecorator.cs" />
     <Compile Include="Assets\Scripts\Weapons\Bullet.cs" />
     <Compile Include="Assets\Scripts\Enemies\EnemyController.cs" />
+    <Compile Include="Assets\Scripts\Enemies\AggressivePlayerHunterStrategy.cs" />
     <Compile Include="Assets\Scripts\Systems\UIManager.cs" />
+    <Compile Include="Assets\Scripts\Interfaces\IEnemyTargetingStrategy.cs" />
     <Compile Include="Assets\Scripts\Systems\GameManager.cs" />
     <Compile Include="Assets\Scripts\Player\PlayerController.cs" />
     <Compile Include="Assets\Scripts\Weapons\BasicBlaster.cs" />

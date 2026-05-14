@@ -14,14 +14,12 @@ namespace CoreBreach.Enemies
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private float attackRate = 1f;
 
+        private IEnemyTargetingStrategy targetingStrategy;
         private float currentHealth;
         private float nextAttackTime;
-        
         private NavMeshAgent agent;
-        
         private Transform playerTransform;
         private Transform coreTransform;
-        
         private Transform currentTarget; 
 
         public float CurrentHealth => currentHealth;
@@ -36,19 +34,31 @@ namespace CoreBreach.Enemies
         {
             currentHealth = maxHealth;
             
-            // Oyuncuyu bul
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null) playerTransform = playerObj.transform;
 
-            // Merkez üssü bul
             GameObject coreObj = GameObject.FindGameObjectWithTag("GameCore"); 
-            if (coreObj != null) coreTransform = coreObj.transform;
+            if (coreObj != null) 
+            {
+                coreTransform = coreObj.transform;
+            }
+            else 
+            {
+                coreTransform = null;
+            }
+
+            if (Random.value > 0.5f)
+                targetingStrategy = new CoreDestroyerStrategy();
+            else
+                targetingStrategy = new AggressivePlayerHunterStrategy();
         }
 
         private void Update()
         {
-            // Önce kime saldıracağımıza karar ver
-            DetermineTarget();
+            if (targetingStrategy != null)
+            {
+                currentTarget = targetingStrategy.DetermineTarget(transform, playerTransform, coreTransform);
+            }
 
             if (currentTarget == null) return;
 
@@ -57,7 +67,6 @@ namespace CoreBreach.Enemies
                 agent.SetDestination(currentTarget.position);
             }
 
-            // Hedefe yeterince yakınsa ve saldırı süresi geldiyse vur
             float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
             if (distanceToTarget <= attackRange && Time.time >= nextAttackTime)
             {
@@ -65,45 +74,9 @@ namespace CoreBreach.Enemies
             }
         }
 
-        private void DetermineTarget()
-        {
-            if (playerTransform == null && coreTransform == null)
-            {
-                currentTarget = null;
-                return;
-            }
-
-            // Sadece biri varsa direkt ona git
-            if (playerTransform == null) 
-            {
-                currentTarget = coreTransform;
-                return;
-            }
-            if (coreTransform == null)
-            {
-                currentTarget = playerTransform;
-                return;
-            }
-
-            // İkisi de hayattaysa (sahnedeyse) mesafeleri ölç
-            float distanceToPlayer = Vector3.Distance(transform.position, playerTransform.position);
-            float distanceToCore = Vector3.Distance(transform.position, coreTransform.position);
-
-            // Hangisi daha yakınsa mevcut hedefimiz o olsun
-            if (distanceToPlayer < distanceToCore)
-            {
-                currentTarget = playerTransform;
-            }
-            else
-            {
-                currentTarget = coreTransform;
-            }
-        }
-
         private void Attack()
         {
             nextAttackTime = Time.time + attackRate;
-            
             IDamageable damageableTarget = currentTarget.GetComponent<IDamageable>();
             if (damageableTarget != null)
             {
@@ -115,12 +88,7 @@ namespace CoreBreach.Enemies
         public void TakeDamage(float damageAmount)
         {
             currentHealth = Mathf.Max(0, currentHealth - damageAmount);
-            Debug.Log($"Enemy took {damageAmount} damage. HP: {currentHealth}");
-            
-            if (currentHealth <= 0)
-            {
-                Die();
-            }
+            if (currentHealth <= 0) Die();
         }
 
         public void Die()
