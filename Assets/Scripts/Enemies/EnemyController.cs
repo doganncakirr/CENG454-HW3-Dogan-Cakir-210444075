@@ -16,6 +16,7 @@ namespace CoreBreach.Enemies
 
         private IEnemyTargetingStrategy targetingStrategy;
         private float currentHealth;
+        private bool isDead;
         private float nextAttackTime;
         private NavMeshAgent agent;
         private Transform playerTransform;
@@ -33,8 +34,17 @@ namespace CoreBreach.Enemies
 
         private void OnEnable()
         {
+            isDead = false;
             currentHealth = maxHealth;
-            
+            nextAttackTime = 0f;
+            currentTarget = null;
+
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.ResetPath();
+                agent.isStopped = false;
+            }
+
             GameObject playerObj = GameObject.FindGameObjectWithTag("Player");
             if (playerObj != null) playerTransform = playerObj.transform;
 
@@ -45,13 +55,24 @@ namespace CoreBreach.Enemies
             }
             else 
             {
-                coreTransform = null;
+            coreTransform = null;
             }
 
             if (Random.value > 0.5f)
                 targetingStrategy = new CoreDestroyerStrategy();
             else
                 targetingStrategy = new AggressivePlayerHunterStrategy();
+        }
+
+        private void OnDisable()
+        {
+            currentTarget = null;
+
+            if (agent != null && agent.isOnNavMesh)
+            {
+                agent.ResetPath();
+                agent.isStopped = true;
+            }
         }
 
         private void Update()
@@ -107,6 +128,9 @@ namespace CoreBreach.Enemies
 
         public void Die()
         {
+            if (isDead) return;
+
+            isDead = true;
             GameEvents.FireEnemyDied(10);
             gameObject.SetActive(false);
         }
