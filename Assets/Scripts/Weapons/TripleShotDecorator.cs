@@ -10,26 +10,27 @@ namespace CoreBreach.Weapons
 
         public override void Fire(Transform firePoint)
         {
-            // 1. Merkez Mermi
-            base.Fire(firePoint);
-
             // Hedef noktayı hesapla
             Ray ray = new Ray(Camera.main.transform.position, Camera.main.transform.forward);
             Vector3 targetPoint = Physics.Raycast(ray, out RaycastHit hit) ? hit.point : ray.GetPoint(100f);
             Vector3 centerDirection = (targetPoint - firePoint.position).normalized;
 
-            float offsetDistance = 0.14f; // Mermileri yanlara kaydırma mesafesi
-            float spreadAngle = 7f;      // Dışarı doğru açılma açısı
+            float sideOffset = 0.18f;      // Sağ-sol mermi aralığı
+            float forwardOffset = 0.45f;   // Mermileri player collider'ından biraz önde başlatır
 
-            // 2. Sağdaki Mermi
-            Vector3 rightPos = firePoint.position + firePoint.right * offsetDistance;
-            Vector3 rightDir = Quaternion.Euler(0, spreadAngle, 0) * centerDirection;
-            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", rightPos, Quaternion.LookRotation(rightDir));
+            Quaternion bulletRotation = Quaternion.LookRotation(centerDirection);
 
-            // 3. Soldaki Mermi
-            Vector3 leftPos = firePoint.position - firePoint.right * offsetDistance;
-            Vector3 leftDir = Quaternion.Euler(0, -spreadAngle, 0) * centerDirection;
-            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", leftPos, Quaternion.LookRotation(leftDir));
+            // 1. Ana mermi
+            Vector3 centerPos = firePoint.position + centerDirection * forwardOffset;
+            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", centerPos, bulletRotation);
+
+            // 2. Sağ mermi
+            Vector3 rightPos = firePoint.position + firePoint.right * sideOffset + centerDirection * forwardOffset;
+            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", rightPos, bulletRotation);
+
+            // 3. Sol mermi
+            Vector3 leftPos = firePoint.position - firePoint.right * sideOffset + centerDirection * forwardOffset;
+            ObjectPoolManager.Instance.SpawnFromPool("PlayerBullet", leftPos, bulletRotation);
         }
     }
 }
