@@ -84,20 +84,29 @@ namespace CoreBreach.Player
 
         private void HandleWeaponState()
         {
+            bool weaponStateChanged = false;
+
             if (rapidFireEndTime > 0 && Time.time >= rapidFireEndTime)
             {
-                ResetWeapon();
-                rapidFireEndTime = -1f; // Yeteneği kapat
-                nextRapidFireAvailableTime = Time.time + rapidFireCooldown; // Cooldown'ı BAŞLAT
-                Debug.Log("Rapid Fire is over, Cooldown has begun.");
+                rapidFireEndTime = -1f;
+                nextRapidFireAvailableTime = Time.time + rapidFireCooldown;
+                weaponStateChanged = true;
+
+                Debug.Log("Rapid Fire is over, cooldown has begun.");
             }
 
             if (tripleShotEndTime > 0 && Time.time >= tripleShotEndTime)
             {
-                ResetWeapon();
-                tripleShotEndTime = -1f; // Yeteneği kapat
-                nextTripleShotAvailableTime = Time.time + tripleShotCooldown; // Cooldown'ı BAŞLAT
-                Debug.Log("Triple Shot is over, Cooldown has begun.");
+                tripleShotEndTime = -1f;
+                nextTripleShotAvailableTime = Time.time + tripleShotCooldown;
+                weaponStateChanged = true;
+
+                Debug.Log("Triple Shot is over, cooldown has begun.");
+            }
+
+            if (weaponStateChanged)
+            {
+                RebuildWeapon();
             }
         }
 
@@ -118,8 +127,9 @@ namespace CoreBreach.Player
                 // Yetenek hazırsa ve şu an zaten aktif değilse çalıştır
                 if (Time.time >= nextRapidFireAvailableTime && rapidFireEndTime < 0)
                 {
-                    currentWeapon = new RapidFireDecorator(currentWeapon);
-                    rapidFireEndTime = Time.time + rapidFireDuration; // Kapanacağı zamanı ayarla
+                    rapidFireEndTime = Time.time + rapidFireDuration;
+                    RebuildWeapon();
+                    
                     Debug.Log($"Rapid Fire ACTIVE ({rapidFireDuration} s)");
                 }
                 else if (rapidFireEndTime < 0) // Eğer aktif değilse ama basıldıysa cooldown uyarısı ver
@@ -135,8 +145,9 @@ namespace CoreBreach.Player
                 // Yetenek hazırsa ve şu an zaten aktif değilse çalıştır
                 if (Time.time >= nextTripleShotAvailableTime && tripleShotEndTime < 0)
                 {
-                    currentWeapon = new TripleShotDecorator(currentWeapon);
-                    tripleShotEndTime = Time.time + tripleShotDuration; // Kapanacağı zamanı ayarla
+                    tripleShotEndTime = Time.time + tripleShotDuration;
+                    RebuildWeapon();
+                    
                     Debug.Log($"Triple Shot ACTIVE ({tripleShotDuration} s)");
                 }
                 else if (tripleShotEndTime < 0)
@@ -147,10 +158,21 @@ namespace CoreBreach.Player
             }
         }
 
-        private void ResetWeapon()
+        private void RebuildWeapon()
         {
-            // Yetenek bitince temel silaha geri dön
-            currentWeapon = new BasicBlaster();
+            IWeapon weapon = new BasicBlaster();
+
+            if (rapidFireEndTime > 0)
+            {
+                weapon = new RapidFireDecorator(weapon);
+            }
+
+            if (tripleShotEndTime > 0)
+            {
+                weapon = new TripleShotDecorator(weapon);
+            }
+
+            currentWeapon = weapon;
         }
 
         private void FixedUpdate()
