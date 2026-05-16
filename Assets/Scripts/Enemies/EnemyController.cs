@@ -14,6 +14,7 @@ namespace CoreBreach.Enemies
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private float attackRate = 1f;
         [SerializeField] private string poolTag = "BasicEnemy";
+        [SerializeField] private EnemyTargetingStrategySO[] availableStrategies;
 
         private IEnemyTargetingStrategy targetingStrategy;
         private float currentHealth;
@@ -59,10 +60,7 @@ namespace CoreBreach.Enemies
             coreTransform = null;
             }
 
-            if (Random.value > 0.5f)
-                targetingStrategy = new CoreDestroyerStrategy();
-            else
-                targetingStrategy = new AggressivePlayerHunterStrategy();
+            SelectRandomStrategy();
         }
 
         private void OnDisable()
@@ -75,22 +73,40 @@ namespace CoreBreach.Enemies
                 agent.isStopped = true;
             }
         }
+        private void SelectRandomStrategy()
+        {
+            if (availableStrategies == null || availableStrategies.Length == 0)
+            {
+                targetingStrategy = null;
+                Debug.LogWarning("EnemyController: No targeting strategies assigned.");
+                return;
+            }
+
+            int randomIndex = Random.Range(0, availableStrategies.Length);
+            targetingStrategy = availableStrategies[randomIndex];
+        }
 
         private void Update()
         {
-            if (targetingStrategy != null)
+            if (targetingStrategy == null)
             {
-                currentTarget = targetingStrategy.DetermineTarget(transform, playerTransform, coreTransform);
+                return;
             }
 
-            if (currentTarget == null) return;
+            currentTarget = targetingStrategy.DetermineTarget(transform, playerTransform, coreTransform);
 
-            if (agent.isOnNavMesh)
+            if (currentTarget == null)
+            {
+                return;
+            }
+
+            if (agent != null && agent.isOnNavMesh)
             {
                 agent.SetDestination(currentTarget.position);
             }
 
             float distanceToTarget = GetDistanceToTarget();
+
             if (distanceToTarget <= attackRange && Time.time >= nextAttackTime)
             {
                 Attack();

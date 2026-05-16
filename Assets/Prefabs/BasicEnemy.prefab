@@ -154,3 +154,7 @@ MonoBehaviour:
   damage: 10
   attackRange: 2
   attackRate: 1
+  poolTag: BasicEnemy
+  availableStrategies:
+  - {fileID: 11400000, guid: 00e207d689596594c83e7ea592dc9320, type: 2}
+  - {fileID: 11400000, guid: 148c26a41b1cb4a4a906547d41af66cf, type: 2}
