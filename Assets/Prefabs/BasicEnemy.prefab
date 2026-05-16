@@ -152,5 +152,5 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CoreBreach.Enemies.EnemyController
   maxHealth: 30
   damage: 10
-  attackRange: 1.5
+  attackRange: 2
   attackRate: 1

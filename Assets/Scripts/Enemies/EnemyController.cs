@@ -68,11 +68,24 @@ namespace CoreBreach.Enemies
                 agent.SetDestination(currentTarget.position);
             }
 
-            float distanceToTarget = Vector3.Distance(transform.position, currentTarget.position);
+            float distanceToTarget = GetDistanceToTarget();
             if (distanceToTarget <= attackRange && Time.time >= nextAttackTime)
             {
                 Attack();
             }
+        }
+
+        private float GetDistanceToTarget()
+        {
+            Collider targetCollider = currentTarget.GetComponent<Collider>();
+
+            if (targetCollider != null)
+            {
+                Vector3 closestPoint = targetCollider.ClosestPoint(transform.position);
+                return Vector3.Distance(transform.position, closestPoint);
+            }
+
+            return Vector3.Distance(transform.position, currentTarget.position);
         }
 
         private void Attack()
