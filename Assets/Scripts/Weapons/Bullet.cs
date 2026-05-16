@@ -1,5 +1,6 @@
 using UnityEngine;
 using CoreBreach.Interfaces;
+using CoreBreach.Systems;
 
 namespace CoreBreach.Weapons
 {
@@ -9,9 +10,10 @@ namespace CoreBreach.Weapons
         [SerializeField] private float damage = 10f;
         [SerializeField] private float lifeTime = 2f; // Ekranda kalma süresi
 
+        private bool hasReturnedToPool; // Merminin iki kez havuza dönmesini engeller
         private void OnEnable()
         {
-            // Mermi havuzdan çıkıp aktif olduğunda, belli bir süre sonra kendini kapatması için sayacı başlat
+            hasReturnedToPool = false;
             Invoke(nameof(Deactivate), lifeTime);
         }
 
@@ -29,21 +31,37 @@ namespace CoreBreach.Weapons
 
         private void OnTriggerEnter(Collider other)
         {
-            // Çarptığımız objede IDamageable arayüzü var mı kontrol et
+            if (other.CompareTag("Player"))
+            {
+                return;
+            }
+
             IDamageable damageable = other.GetComponent<IDamageable>();
-            
+
             if (damageable != null)
             {
                 damageable.TakeDamage(damage);
+                Deactivate();
+                return;
             }
 
-            // Çarptıktan sonra havuza geri dön.
             Deactivate();
         }
 
         private void Deactivate()
         {
-            gameObject.SetActive(false);
+            if (hasReturnedToPool) return;
+
+            hasReturnedToPool = true;
+
+            if (ObjectPoolManager.Instance != null)
+            {
+                ObjectPoolManager.Instance.ReturnToPool(gameObject);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }

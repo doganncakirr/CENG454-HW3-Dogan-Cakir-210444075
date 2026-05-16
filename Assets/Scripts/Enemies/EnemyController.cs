@@ -13,6 +13,7 @@ namespace CoreBreach.Enemies
         [SerializeField] private float damage = 10f;
         [SerializeField] private float attackRange = 1.5f;
         [SerializeField] private float attackRate = 1f;
+        [SerializeField] private string poolTag = "BasicEnemy";
 
         private IEnemyTargetingStrategy targetingStrategy;
         private float currentHealth;
@@ -132,7 +133,15 @@ namespace CoreBreach.Enemies
 
             isDead = true;
             GameEvents.FireEnemyDied(10);
-            gameObject.SetActive(false);
+
+            if (ObjectPoolManager.Instance != null)
+            {
+                ObjectPoolManager.Instance.ReturnToPool(poolTag, gameObject);
+            }
+            else
+            {
+                gameObject.SetActive(false);
+            }
         }
     }
 }
