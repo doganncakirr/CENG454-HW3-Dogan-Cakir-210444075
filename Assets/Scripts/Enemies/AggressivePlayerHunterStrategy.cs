@@ -1,14 +1,24 @@
 using UnityEngine;
-using CoreBreach.Interfaces;
 
 namespace CoreBreach.Enemies
 {
-    public class AggressivePlayerHunterStrategy : IEnemyTargetingStrategy
+    [CreateAssetMenu(
+        fileName = "AggressivePlayerHunterStrategy",
+        menuName = "Core Breach/Enemy Strategies/Aggressive Player Hunter"
+    )]
+    public class AggressivePlayerHunterStrategy : EnemyTargetingStrategySO
     {
-        public Transform DetermineTarget(Transform enemyTransform, Transform playerTransform, Transform coreTransform)
+        public override Transform DetermineTarget(
+            Transform enemyTransform,
+            Transform playerTransform,
+            Transform coreTransform
+        )
         {
-            // Oyuncu yaşıyorsa ona saldırır, oyuncu yoksa Core'a saldırır
-            if (playerTransform != null) return playerTransform;
+            if (playerTransform != null)
+            {
+                return playerTransform;
+            }
+
             return coreTransform;
         }
     }
